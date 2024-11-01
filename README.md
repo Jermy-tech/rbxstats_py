@@ -18,7 +18,7 @@ A Python client for the RBXStats API, providing easy access to a variety of Robl
 Install the package via pip:
 
 ```bash
-pip install rbxstats_api
+pip install rbxstats
 ```
 
 ## Usage
