@@ -28,7 +28,7 @@ Import the client, initialize it with your API key, and use its methods to inter
 ### Quick Start
 
 ```python
-from rbxstats_api import RbxStatsClient
+from rbxstats import RbxStatsClient
 
 # Initialize the client
 client = RbxStatsClient(api_key="YOUR_API_KEY")
