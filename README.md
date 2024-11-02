@@ -174,7 +174,7 @@ This package requires `requests` to handle HTTP requests. It will be automatical
 If you’d like to contribute, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/yourusername/rbxstats_api
+git clone https://github.com/Jermy-tech/rbxstats_api
 cd rbxstats_api
 pip install -e .
 ```
@@ -190,7 +190,3 @@ pytest
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-This README provides a clear and detailed overview of your package, helping users understand its usage and capabilities. You can replace `yourusername` with your GitHub username in the links if hosting on GitHub.
