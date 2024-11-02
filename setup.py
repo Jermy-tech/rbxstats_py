@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="rbxstats_api",
+    name="rbxstats",
     version="0.1.1",
     description="A Python client for accessing the RBXStats API.",
     long_description=open("README.md").read(),
