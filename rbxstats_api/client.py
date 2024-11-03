@@ -1,115 +1,112 @@
 import requests
+from requests.exceptions import HTTPError, Timeout, RequestException
 
 class RbxStatsClient:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.base_url = "https://api.rbxstats.xyz/api"
-        
-        # Initialize endpoint classes
-        self.offsets = Offsets(self.api_key, self.base_url)
-        self.exploits = Exploits(self.api_key, self.base_url)
-        self.versions = Versions(self.api_key, self.base_url)
-        self.games = Games(self.api_key, self.base_url)
-
-class BaseEndpoint:
-    def __init__(self, api_key, base_url):
+    def __init__(self, api_key, base_url="https://api.rbxstats.com/v1", timeout=5):
         self.api_key = api_key
         self.base_url = base_url
+        self.timeout = timeout
+        self.headers = {"Authorization": f"Bearer {self.api_key}"}
 
-    def _make_request(self, endpoint):
-        """Internal method to make GET requests to the specified endpoint."""
-        headers = {"Authorization": f"Bearer {self.api_key}"}
-        response = requests.get(endpoint, headers=headers)
-        response.raise_for_status()
-        return response.json()
+    def _get(self, endpoint, params=None):
+        try:
+            response = requests.get(
+                f"{self.base_url}/{endpoint}",
+                headers=self.headers,
+                params=params,
+                timeout=self.timeout
+            )
+            response.raise_for_status()
+            return response.json()
+        except HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return {"error": str(http_err)}
+        except Timeout:
+            print("Request timed out.")
+            return {"error": "Request timed out."}
+        except RequestException as req_err:
+            print(f"Network error: {req_err}")
+            return {"error": str(req_err)}
+        except ValueError as json_err:
+            print(f"JSON decoding error: {json_err}")
+            return {"error": "Error decoding JSON response."}
 
-# Offsets endpoints
-class Offsets(BaseEndpoint):
-    def get_all_offsets(self, plain_text=False):
-        """Fetch all Roblox offsets."""
-        url = f"{self.base_url}/offsets"
-        if plain_text:
-            url += "/plain"
-        return self._make_request(f"{url}?api={self.api_key}")
+    def set_headers(self, additional_headers):
+        """Set additional headers for the requests."""
+        self.headers.update(additional_headers)
 
-    def get_offset_by_name(self, name, plain_text=False):
-        """Fetch a specific Roblox offset by name."""
-        url = f"{self.base_url}/offsets/search/{name}"
-        if plain_text:
-            url += "/plain"
-        return self._make_request(f"{url}?api={self.api_key}")
+    def set_timeout(self, timeout):
+        """Set custom timeout for requests."""
+        self.timeout = timeout
 
-    def get_offsets_by_prefix(self, prefix, plain_text=False):
-        """Fetch offsets with a specific prefix."""
-        url = f"{self.base_url}/offsets/prefix/{prefix}"
-        if plain_text:
-            url += "/plain"
-        return self._make_request(f"{url}?api={self.api_key}")
+    # Offsets nested class
+    class Offsets:
+        def __init__(self, client):
+            self.client = client
 
-    def get_camera_offsets(self, plain_text=False):
-        """Fetch all camera-related offsets."""
-        url = f"{self.base_url}/offsets/camera"
-        if plain_text:
-            url += "/plain"
-        return self._make_request(f"{url}?api={self.api_key}")
+        def all(self):
+            return self.client._get("offsets")
 
-# Exploits endpoints
-class Exploits(BaseEndpoint):
-    def get_all_exploits(self):
-        """Fetch all current working exploits."""
-        return self._make_request(f"{self.base_url}/exploits?api={self.api_key}")
+        def by_name(self, name):
+            return self.client._get(f"offsets/{name}")
 
-    def get_windows_exploits(self):
-        """Fetch all current working Windows exploits."""
-        return self._make_request(f"{self.base_url}/windows?api={self.api_key}")
+        def by_prefix(self, prefix):
+            return self.client._get(f"offsets/prefix/{prefix}")
 
-    def get_mac_exploits(self):
-        """Fetch all current working Mac exploits."""
-        return self._make_request(f"{self.base_url}/mac?api={self.api_key}")
+        def camera(self):
+            return self.client._get("offsets/camera")
 
-    def get_detected_exploits(self):
-        """Fetch all currently detected exploits."""
-        return self._make_request(f"{self.base_url}/detected?api={self.api_key}")
+    # Exploits nested class
+    class Exploits:
+        def __init__(self, client):
+            self.client = client
 
-    def get_undetected_exploits(self):
-        """Fetch all currently undetected exploits."""
-        return self._make_request(f"{self.base_url}/undetected?api={self.api_key}")
+        def all(self):
+            return self.client._get("exploits")
 
-    def get_free_exploits(self):
-        """Fetch all currently free exploits."""
-        return self._make_request(f"{self.base_url}/free?api={self.api_key}")
+        def windows(self):
+            return self.client._get("exploits/windows")
 
-    def get_paid_exploits(self):
-        """Fetch all currently paid exploits."""
-        return self._make_request(f"{self.base_url}/paid?api={self.api_key}")
+        def mac(self):
+            return self.client._get("exploits/mac")
 
-    def get_in_development_exploits(self):
-        """Fetch all exploits in development."""
-        return self._make_request(f"{self.base_url}/indev?api={self.api_key}")
+        def undetected(self):
+            return self.client._get("exploits/undetected")
 
-    def get_exploit_summary(self):
-        """Get a summary of detected and undetected exploits."""
-        return self._make_request(f"{self.base_url}/summary?api={self.api_key}")
+        def detected(self):
+            return self.client._get("exploits/detected")
 
-    def get_exploit_count(self):
-        """Get the total number of exploits."""
-        return self._make_request(f"{self.base_url}/count?api={self.api_key}")
+        def free(self):
+            return self.client._get("exploits/free")
 
-# Versions endpoints
-class Versions(BaseEndpoint):
-    def get_latest_version(self):
-        """Fetch the latest Roblox version."""
-        return self._make_request(f"{self.base_url}/versions/latest?api={self.api_key}")
+    # Versions nested class
+    class Versions:
+        def __init__(self, client):
+            self.client = client
 
-    def get_future_version(self):
-        """Fetch the future Roblox version."""
-        return self._make_request(f"{self.base_url}/versions/future?api={self.api_key}")
+        def latest(self):
+            return self.client._get("versions/latest")
 
-# Games endpoints
-class Games(BaseEndpoint):
-    def get_game_info(self, game_id, plain_text=False):
-        """Fetch game information for a specific game ID."""
-        url = f"{self.base_url}/offsets/game/{game_id}"
-        if plain_text:
-            url += "/plain"
-        return self._make_request(f"{url}?api={self.api_key}")
+        def future(self):
+            return self.client._get("versions/future")
+
+    # Game nested class
+    class Game:
+        def __init__(self, client):
+            self.client = client
+
+        def by_id(self, game_id):
+            return self.client._get(f"game/{game_id}")
+
+    # Instance methods to access the nested classes
+    def offsets(self):
+        return self.Offsets(self)
+
+    def exploits(self):
+        return self.Exploits(self)
+
+    def versions(self):
+        return self.Versions(self)
+
+    def game(self):
+        return self.Game(self)
