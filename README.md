@@ -2,16 +2,13 @@
 
 [![PyPI version](https://badge.fury.io/py/rbxstats-api.svg)](https://badge.fury.io/py/rbxstats-api)
 
-A Python client for the RBXStats API, providing easy access to a variety of Roblox-related offsets, exploits, game information, and more. This package allows developers to integrate with RBXStats API effortlessly.
+A Python client for the RBXStats API, providing easy access to various Roblox-related data like offsets, exploits, game information, and more. This package allows developers to integrate with the RBXStats API effortlessly, now with advanced error handling and customization options.
 
 ## Features
 
-- Retrieve all Roblox offsets in JSON or plain text.
-- Access specific offsets by name or prefix.
-- Fetch camera offsets and game-specific information.
-- Query available exploits and their statuses.
-- Supports various data formats (JSON or plain text).
-- Simple, flexible class-based design.
+- Retrieve Roblox offsets, exploits, game information, and version data.
+- Enhanced error handling for network issues, JSON decoding, and HTTP errors.
+- Customizable headers and request timeouts for flexible integration.
 
 ## Installation
 
@@ -33,134 +30,120 @@ from rbxstats import RbxStatsClient
 # Initialize the client
 client = RbxStatsClient(api_key="YOUR_API_KEY")
 
-# Get all offsets in JSON format
-all_offsets = client.offsets.get_all()
+# Get all offsets
+all_offsets = client.offsets().all()
 print(all_offsets)
 
-# Get a specific offset by name in plain text
-specific_offset = client.offsets.get_offset_by_name_plain("RenderToEngine")
+# Get a specific offset by name
+specific_offset = client.offsets().by_name("RenderToEngine")
 print(specific_offset)
 
-# Get all camera-related offsets in JSON format
-camera_offsets = client.offsets.get_camera()
-print(camera_offsets)
-
-# Get a list of all undetected exploits
-undetected_exploits = client.exploits.get_undetected()
+# Get undetected exploits
+undetected_exploits = client.exploits().undetected()
 print(undetected_exploits)
 ```
 
-## API Reference
+## Customization Options
 
-Each endpoint is encapsulated in its own class within the `RbxStatsClient`. Here’s a rundown of available classes and methods.
+You can add custom headers or adjust the request timeout to suit your application’s needs.
 
-### 1. `Offsets`
-
-Methods to access Roblox offsets.
-
-- **Get all offsets**
-  ```python
-  client.offsets.get_all()
-  ```
-  Returns all offsets in JSON format.
-
-- **Get all offsets in plain text**
-  ```python
-  client.offsets.get_all_plain()
-  ```
-  Returns all offsets in plain text format.
-
-- **Get a specific offset by name**
-  ```python
-  client.offsets.get_offset_by_name("RenderToEngine")
-  ```
-  Returns a single offset in JSON format by name.
-
-- **Get a specific offset by name in plain text**
-  ```python
-  client.offsets.get_offset_by_name_plain("RenderToEngine")
-  ```
-
-- **Get offsets by prefix**
-  ```python
-  client.offsets.get_offsets_by_prefix("Camera")
-  ```
-
-- **Get camera-related offsets**
-  ```python
-  client.offsets.get_camera()
-  ```
-  Returns all camera-related offsets in JSON format.
-
-### 2. `Exploits`
-
-Methods to get current Roblox exploit data.
-
-- **Get all exploits**
-  ```python
-  client.exploits.get_all()
-  ```
-
-- **Get Windows exploits**
-  ```python
-  client.exploits.get_windows()
-  ```
-
-- **Get Mac exploits**
-  ```python
-  client.exploits.get_mac()
-  ```
-
-- **Get undetected exploits**
-  ```python
-  client.exploits.get_undetected()
-  ```
-
-- **Get detected exploits**
-  ```python
-  client.exploits.get_detected()
-  ```
-
-- **Get free exploits**
-  ```python
-  client.exploits.get_free()
-  ```
-
-### 3. `Versions`
-
-Methods to get the latest and future versions of Roblox.
-
-- **Get the latest Roblox version**
-  ```python
-  client.versions.get_latest()
-  ```
-  Returns the latest version information for Windows and Mac in JSON format.
-
-- **Get the future Roblox version**
-  ```python
-  client.versions.get_future()
-  ```
-  Returns the upcoming version information for Windows and Mac in JSON format.
-
-### 4. `Game`
-
-Retrieve game-specific information based on game ID.
-
-- **Get game details by ID**
-  ```python
-  client.game.get_game_by_id(12345)
-  ```
-  Replace `12345` with the desired game ID.
-
-## Error Handling
-
-API calls that fail will raise an exception with a description of the issue. Make sure to handle exceptions, especially if you’re working with user-provided input or network-dependent environments.
+- **Custom Headers**: Use the `set_headers` method to add or update headers dynamically.
+- **Request Timeout**: Use the `set_timeout` method to set a custom timeout (in seconds) for requests.
 
 Example:
 
 ```python
+# Initialize the client
+client = RbxStatsClient(api_key="YOUR_API_KEY")
+
+# Customize headers and timeout
+client.set_headers({"X-Custom-Header": "MyHeaderValue"})
+client.set_timeout(10)  # Set a custom timeout (in seconds)
+```
+
+## API Reference
+
+Each endpoint is encapsulated in its own class within the `RbxStatsClient`. Here’s an overview of the available classes and methods.
+
+### Offsets
+
+Methods to access Roblox offsets.
+
+- **Get all offsets**  
+  ```python
+  client.offsets().all()
+  ```
+
+- **Get a specific offset by name**  
+  ```python
+  client.offsets().by_name("RenderToEngine")
+  ```
+
+- **Get offsets by prefix**  
+  ```python
+  client.offsets().by_prefix("Camera")
+  ```
+
+- **Get camera-related offsets**  
+  ```python
+  client.offsets().camera()
+  ```
+
+### Exploits
+
+Methods to get current Roblox exploit data.
+
+- **Get all exploits**  
+  ```python
+  client.exploits().all()
+  ```
+
+- **Get undetected exploits**  
+  ```python
+  client.exploits().undetected()
+  ```
+
+- **Get free exploits**  
+  ```python
+  client.exploits().free()
+  ```
+
+### Versions
+
+Methods to get the latest and future versions of Roblox.
+
+- **Get the latest Roblox version**  
+  ```python
+  client.versions().latest()
+  ```
+
+- **Get the future Roblox version**  
+  ```python
+  client.versions().future()
+  ```
+
+### Game
+
+Retrieve game-specific information based on game ID.
+
+- **Get game details by ID**  
+  ```python
+  client.game().by_id(12345)
+  ```
+
+## Error Handling
+
+This client includes robust error handling for common issues:
+
+- **HTTP Errors**: Handles client and server errors (e.g., 404 Not Found, 500 Internal Server Error).
+- **Timeouts**: Prevents requests from hanging indefinitely.
+- **JSON Decoding Errors**: Manages cases where the response isn’t a valid JSON.
+
+Error responses are returned as structured JSON with details about the issue:
+
+```python
 try:
-    offsets = client.offsets.get_all()
+    offsets = client.offsets().all()
 except Exception as e:
     print(f"An error occurred: {e}")
 ```
