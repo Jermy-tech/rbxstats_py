@@ -1,6 +1,6 @@
 # RBXStats API Client
 
-[![PyPI version](https://badge.fury.io/py/rbxstats-api.svg)](https://badge.fury.io/py/rbxstats-api)
+[![PyPI version](https://badge.fury.io/py/rbxstats.svg)](https://badge.fury.io/py/rbxstats)
 
 A Python client for the RBXStats API, providing easy access to various Roblox-related data like offsets, exploits, game information, and more. This package allows developers to integrate with the RBXStats API effortlessly, now with advanced error handling and customization options.
 
