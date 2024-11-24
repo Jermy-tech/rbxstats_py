@@ -2,7 +2,7 @@ import requests
 from requests.exceptions import HTTPError, Timeout, RequestException
 
 class RbxStatsClient:
-    def __init__(self, api_key, base_url="https://api.rbxstats.com/api", timeout=5):
+    def __init__(self, api_key, base_url="https://api.rbxstats.xyz/api", timeout=5):
         self.api_key = api_key
         self.base_url = base_url
         self.timeout = timeout
