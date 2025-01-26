@@ -9,6 +9,11 @@ class RbxStatsClient:
         self.headers = {"Authorization": f"Bearer {self.api_key}"}
 
     def _get(self, endpoint, params=None):
+        if params is None:
+            params = {}
+        # Add the API key as a query parameter
+        params["api"] = self.api_key
+    
         try:
             response = requests.get(
                 f"{self.base_url}/{endpoint}",
